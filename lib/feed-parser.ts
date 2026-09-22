@@ -1,0 +1,15 @@
+import { XMLParser } from 'fast-xml-parser';
+import { parseHTML } from 'linkedom';
+import { sources, type Source } from './sources';
+const allowedHosts=new Set(sources.flatMap(s=>[s.home,...s.feeds].map(u=>new URL(u).hostname)).concat(['pythoncheatsheet.org','docs.python.org','realpython.com','www.realpython.com','treyhunner.com','www.treyhunner.com','pybit.es','www.pybit.es','wired.com','howtogeek.com','tomshardware.com','python.org']));
+export function allowedURL(raw:string){try{const u=new URL(raw);return u.protocol==='https:'&&!u.username&&!u.password&&(!u.port||u.port==='443')&&allowedHosts.has(u.hostname)}catch{return false}}
+export function plainText(html:string){const {document}=parseHTML(`<div>${html}</div>`);document.querySelectorAll('script,style,noscript,svg').forEach(n=>n.remove());return document.body?.textContent?.trim()||document.documentElement.textContent?.replace(/\s+/g,' ').trim()||'';}
+const textValue=(v:unknown):string=>typeof v==='string'?v:typeof v==='number'?String(v):v&&typeof v==='object'?'#text' in v?String((v as Record<string,unknown>)['#text']):'':'';
+export type Candidate={title:string;url:string;excerpt:string;source:Source;published?:string};
+export function parseFeed(xml:string,source:Source):Candidate[]{
+ if(/<!DOCTYPE|<!ENTITY/i.test(xml))throw Error('Unsupported feed declarations');
+ const parsed=new XMLParser({ignoreAttributes:false,attributeNamePrefix:'@_',processEntities:true}).parse(xml);
+ const raw=parsed.rss?.channel?.item||parsed.feed?.entry||parsed['rdf:RDF']?.item||[];
+ return (Array.isArray(raw)?raw:[raw]).flatMap((x:Record<string,unknown>)=>{let link=textValue(x.link);if(!link){const links=Array.isArray(x.link)?x.link:[x.link];const match=links.find((l:any)=>l&&(!l['@_rel']||l['@_rel']==='alternate'));link=(match as any)?.['@_href']||'';}let url:string;try{url=new URL(link,source.home).href}catch{return []}if(!allowedURL(url))return [];const title=plainText(textValue(x.title));const excerpt=plainText(textValue(x['content:encoded']||x.content||x.description||x.summary)).slice(0,12000);if(!title)return [];if(!source.pythonOnly&&!/\bpython\b|\bpyodide\b|\bpyqt\b|\bpandas\b|\bdjango\b|\bpipx?\b/i.test(title+' '+excerpt))return [];const pub=textValue(x.pubDate||x.published||x.updated);return[{title,url,excerpt,source,published:pub&&!isNaN(Date.parse(pub))?new Date(pub).toISOString():undefined}]}).slice(0,8);
+}
+export function extractArticle(html:string){const {document}=parseHTML(html);if(document.querySelector('script[type="application/ld+json"]')?.textContent?.includes('"isAccessibleForFree":false'))return '';document.querySelectorAll('script,style,nav,footer,header,aside,form,noscript,[role="navigation"],[aria-hidden="true"]').forEach(n=>n.remove());const main=document.querySelector('article')||document.querySelector('main')||document.querySelector('[itemprop="articleBody"]');if(!main)return '';return Array.from(main.querySelectorAll('h1,h2,h3,p,li,pre')).map(n=>n.textContent?.trim()).filter(Boolean).join('\n').slice(0,35000);}
