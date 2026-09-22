@@ -18,6 +18,8 @@ ADHD is central to the design, alongside the needs of people with low vision or 
 
 The planned opening is an interactive **“I want to…”** bar. It offers one goal at a time, such as *create a line chart* or *use watchdog to keep tabs on my downloads folder*. The example words gently erase and change; tapping a goal requests a new, just-in-time interactive lesson tailored to that goal and the learner. Each lesson should combine touch-based puzzles, a concise explanation, optional background, and fresh examples grounded in sources and checked before play. Typing your own idea is optional. Examples stop changing during interaction, with a steady alternative for reduced motion.
 
+An **“I'm feeling curious”** button will offer a starting point when you do not have a goal in mind. One tap begins a guided, just-in-time lesson, assuming no computing knowledge for a new learner. A small, playful experiment introduces one idea at a time, with no typing or placement quiz. You can follow the next discovery, try something else, or explore more deeply. Returning learners should receive suggestions suited to their experience.
+
 The planned experience combines several ways to explore:
 
 - **Choose and observe.** Fill a gap, predict a result, and receive a short explanation of what happened.
