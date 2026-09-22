@@ -1,6 +1,6 @@
 # Python Playground
 
-**Learn Python through *play* .**
+**Learn Python through *play* an *inclusive*, mobile friendly experience that adapts to *you*.**
 
 Python Playground is being built as a place to experiment with Python: rearrange code, make a prediction, try an alternative, and discover what happens. Its purpose is to make that exploration enjoyable, from a first encounter with programming through advanced engineering.
 
