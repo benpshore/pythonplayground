@@ -1,63 +1,60 @@
 # Python Playground
 
-A touch-first Python reading room and learning playground. This repository contains application source only. It does not contain a deployed site address, private records, credentials, or user interaction history.
+**Learn Python by playing with it.**
 
-## What it does
+Python Playground is being built as a place to experiment with Python: rearrange code, make a prediction, try an alternative, and discover what happens. Its purpose is to make that exploration enjoyable, from a first encounter with programming through advanced engineering.
 
-- Python RSS/Atom reading from the official Python and PSF blogs, Real Python, Python Cheatsheet, How-To Geek programming, WIRED, Tom’s Hardware, Trey Hunner, and PyBites. Publisher availability is shown explicitly; Python Cheatsheet feed discovery is best-effort.
-- A two-stage server-side OpenAI pipeline: select relevant useful Python articles, then extract article text and summarize it. One short takeaway, brief key points, and an estimated reading time. Excerpt-only and unavailable summaries are labeled.
-- Automatically refreshes stale content when the app opens with AI connected; a manual refresh is also available. There is no unattended scheduler. Refreshes have a 15-minute cooldown and a concurrency lock.
-- Six built-in exercises: multiple choice, tap-to-place code pieces, and alternative approaches. Double-tap a piece to learn its purpose. Text remains selectable; no dragging is required.
-- Touch-based remixing: choose an approach, add/remove/reorder/indent prewritten lines. A text editor is optional. Arbitrary code is reviewed by the model, never executed by the server.
-- An AI coach with one-tap prompts and generated puzzles at three levels. Generated puzzles are schema-checked, but are not executed or formally verified. Built-in examples have executable regression checks.
-- Midnight and device-matched themes, adjustable text, 1.7 line spacing, wrapped code, reduced-motion support and iOS standalone metadata.
-- Private D1 storage for article metadata, bookmarks and completed exercises. Device appearance preferences alone use localStorage.
+The goal is real fluency developed through curiosity and practice. A successful session leaves you understanding something new and wanting to try another idea.
 
-## Runtime
+## Why a playground?
 
-Vinext/React, TypeScript and Cloudflare Workers. Sites supplies owner-private access, authenticated request headers and a D1 binding named `DB`. API handlers reject anonymous callers. Writes require a matching Origin header. Do not put this behind an untrusted proxy that allows clients to forge identity headers.
+There is substantial work between having an idea and testing it in a conventional coding environment. Typing, editor setup, navigation, and unfamiliar terminology can interrupt the thinking that makes programming interesting.
 
-The site must be deployed owner-only. Public repository visibility does not grant site access or editing permission.
+Python Playground puts that thinking within reach through touch. Code becomes something you can manipulate directly. You can investigate a condition, assemble a working program, or compare several solutions without having to type them out first.
+
+Accessibility is part of the product's foundation. Reducing the effort required to participate should leave more room for challenging ideas, experimentation, and enjoyment.
+
+## How play should work
+
+The planned experience combines several ways to explore:
+
+- **Choose and observe.** Fill a gap, predict a result, and receive a short explanation of what happened.
+- **Build with pieces.** Arrange code snippets by touch and reveal what each piece does.
+- **Try your own approach.** Solve a problem another way and explore the trade-offs. Valid, creative solutions deserve recognition.
+- **Follow your curiosity.** Get a brief explanation, a useful hint, or a related challenge suited to your understanding.
+
+An individual learning record should help the playground choose what to offer next. The AI's role is to support exploration and explain ideas clearly. Correctness must be established through structured content and executable checks.
+
+## Designed for iOS
+
+The primary experience must work comfortably on iPhone and iPad, in both portrait and landscape. Layouts must adapt automatically to narrow displays, foldable outer and inner displays, and the additional space available on larger iPads and desktop browsers.
+
+Normal play must be possible without typing or precise dragging. Readable, adjustable text, wrapped code, generous line spacing, and usable touch targets are fundamental requirements.
+
+Motion should communicate a change of state: a subtle answer-color fade, a selection outline, or translucency while moving a piece. It should remain restrained and respect reduced-motion preferences.
+
+## Serious Python, approached through play
+
+The curriculum is intended to span introductory concepts, advanced language behavior, the standard library, and selected libraries such as NumPy.
+
+Its foundation is the official [Python 3.14 tutorial](https://docs.python.org/3.14/tutorial/), [language reference](https://docs.python.org/3.14/reference/), [standard library reference](https://docs.python.org/3.14/library/), and relevant [PEPs](https://peps.python.org/). Library-specific material should use the respective project's official documentation.
+
+The planning target is approximately **212 puzzles across 70–100 modules**. This is a scope target, not a completed curriculum. Content needs source references, explicit learning objectives, checked solutions, and tests for meaningful alternative answers.
+
+A companion reading feed should bring in useful Python news, projects, and practical ideas. AI triage and short, source-grounded summaries should help readers decide what is worth exploring, while clearly identifying incomplete article access.
+
+## Current status
+
+**This repository contains an early prototype. There is no deployed website.**
+
+The existing code includes six sample lessons, an interface preview, RSS and AI integration code, a database schema, and local checks. These are preliminary components; they do not establish that the intended product works end to end.
+
+The adaptive iOS experience, full curriculum, individualized progression, provisioned database, live RSS and AI workflows, security validation, and deployed-site acceptance testing remain unfinished. Existing build and lesson checks are not substitutes for those acceptance tests.
+
+The planned alpha is private. Public rollout will depend on further development and funding. This public repository must exclude credentials, private deployment addresses, and learner records.
 
 ## Development
 
-Requires Node 22.13+ (Node 22 LTS recommended), pnpm 11.25 and Python 3 for the lesson checks.
+The current web prototype uses TypeScript, React/Vinext, and pnpm. **uv is the required tool for Python runtimes, dependencies, and environments.** The existing test harness and CI still need to be aligned with that requirement and the Python 3.14 curriculum.
 
-```sh
-pnpm install --frozen-lockfile
-pnpm typecheck
-pnpm test
-pnpm dev
-```
-
-The UI and built-in lessons render locally without secrets. Private API calls require the hosting platform’s authenticated context. Local previews intentionally do not bypass authentication; this means database actions show a connection message when no authenticated context exists.
-
-```sh
-pnpm db:generate
-pnpm build
-```
-
-Schema is in `db/schema.ts`. Commit generated migrations; never change an applied migration. Sites provisions the real database from the logical declaration in `.openai/hosting.json` and applies migrations before publication.
-
-## AI connection
-
-Set server-only `OPENAI_API_KEY` as a hosting secret. `OPENAI_MODEL` defaults to `gpt-5-mini` with low reasoning effort through the Responses API. The key stays out of browser code. API usage is billed to the configured OpenAI API account, separately from a ChatGPT subscription. No API key has been included in this repository.
-
-The model receives public article extracts, or the current learning task, code and selected question. Requests set `store: false`. No chat history is persisted. This setting is not a promise about provider-side retention under the account’s data policy.
-
-Missing AI or storage configuration produces an explicit unavailable state. The built-in exercises and starter reading shelf remain available. Starter guide notes are authored examples, not fetched news or live AI summaries.
-
-## Boundaries
-
-- Only allowlisted HTTPS publisher hosts are fetched. Redirects are rechecked, response size and time are bounded, and external XML entity declarations are rejected.
-- Broad feeds get a Python keyword filter before model triage. Without AI, links are explicitly labeled as untriaged and unsummarized.
-- Extracts are treated as untrusted data in model instructions; HTML is never rendered from feeds.
-- No paywall bypass. Some publishers may return blocked, incomplete or paid content. Summaries of extracted text are not guarantees that every article paragraph was available.
-- No analytics, visitor collaboration, public comments, or sharing flow.
-- The deployment manifest must never acquire a private project ID in the public repository. Keep the hosted checkout separate; copy only generic application source here.
-
-## Checks
-
-`pnpm test` validates RSS/Atom parsing, fetch URL restrictions, XML entity rejection, article extraction, generated-lesson structure, and actual Python output for every built-in accepted answer, puzzle and alternative.
-
-GitHub Actions runs type checks, those tests and a production build without API credentials. Browser checks cover answer feedback, touch-piece placement, double-tap help and the remix interface. Real iOS Safari and live model/database operations still require verification in the private deployment.
+Implementation details may change as the product is developed. The touch-first experience, freedom to experiment, and depth of learning are the requirements those choices must serve.
