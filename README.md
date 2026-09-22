@@ -16,6 +16,8 @@ ADHD is central to the design, alongside the needs of people with low vision or 
 
 ## How play should work
 
+The planned opening is an interactive **“I want to…”** bar. It offers one goal at a time, such as *create a line chart* or *use watchdog to keep tabs on my downloads folder*. The example words gently erase and change; tapping a goal starts exploring it. Typing your own idea is optional. Examples stop changing during interaction, with a steady alternative for reduced motion.
+
 The planned experience combines several ways to explore:
 
 - **Choose and observe.** Fill a gap, predict a result, and receive a short explanation of what happened.
